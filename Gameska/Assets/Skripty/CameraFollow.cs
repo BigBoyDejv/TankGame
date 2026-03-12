@@ -20,6 +20,7 @@ public class CameraFollow : MonoBehaviour
 
     private float currentYaw = 0f;
     private Vector3 smoothVelocity = Vector3.zero;
+    private float stabilizedY;
 
     void Start()
     {
@@ -31,15 +32,23 @@ public class CameraFollow : MonoBehaviour
         }
 
         if (target != null)
+        {
             currentYaw = target.eulerAngles.y;
+            stabilizedY = target.position.y;
+        }
     }
 
     void LateUpdate()
     {
         if (target == null) return;
 
+        // --- Stabilizácia ---
+        // Vyfiltrujeme Y pozíciu cieľa, aby kamera neposkakovala na nerovnostiach
+        stabilizedY = Mathf.Lerp(stabilizedY, target.position.y, smoothSpeed * Time.deltaTime);
+        Vector3 stabilizedPos = new Vector3(target.position.x, stabilizedY, target.position.z);
+
         // Horizontálna rotácia sleduje vežu
-        Vector3 aimDir = TurretControl.AimPoint - target.position;
+        Vector3 aimDir = TurretControl.AimPoint - stabilizedPos;
         aimDir.y = 0f;
 
         if (aimDir.magnitude > 0.5f)
@@ -54,7 +63,7 @@ public class CameraFollow : MonoBehaviour
         // Pozícia kamery
         Quaternion rotation = Quaternion.Euler(verticalAngle, currentYaw, 0f);
         Vector3 offset = rotation * new Vector3(0f, 0f, -distance);
-        Vector3 desiredPosition = target.position + offset;
+        Vector3 desiredPosition = stabilizedPos + offset;
 
         transform.position = Vector3.SmoothDamp(
             transform.position, desiredPosition,
@@ -62,7 +71,7 @@ public class CameraFollow : MonoBehaviour
         );
 
         // Pozerá na tank
-        Vector3 lookTarget = target.position + Vector3.up * 1.5f;
+        Vector3 lookTarget = stabilizedPos + Vector3.up * 1.5f;
         Quaternion desiredRotation = Quaternion.LookRotation(lookTarget - transform.position);
         transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, rotationDamping * Time.deltaTime);
     }
