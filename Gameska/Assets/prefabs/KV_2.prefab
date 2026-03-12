@@ -193,9 +193,11 @@ GameObject:
   - component: {fileID: 2662563850482988073}
   - component: {fileID: 3979360331055144128}
   - component: {fileID: 793230733342181011}
+  - component: {fileID: -9215227733976859951}
+  - component: {fileID: -2427059151256428529}
   m_Layer: 0
   m_Name: KV_2
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -318,9 +320,50 @@ MonoBehaviour:
   maxHealth: 100
   currentHealth: 0
   isPlayer: 0
-  explosionEffect: {fileID: 1000011797152326, guid: acf39d9f4addf294d93fa56fa373961b, type: 3}
+  explosionEffect: {fileID: 7522982781472501662, guid: 017c9fcd02ca72049806a4014da0bea6, type: 3}
   fireEffect: {fileID: 1000011797152326, guid: acf39d9f4addf294d93fa56fa373961b, type: 3}
   healthSlider: {fileID: 0}
+--- !u!114 &-9215227733976859951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 794124813005606766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75e2ee19b701d53438f49ad4e9f5fc31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TankHealthBar
+  tankHealth: {fileID: 0}
+  isPlayer: 0
+  playerColor: {r: 0, g: 1, b: 0, a: 1}
+  enemyColor: {r: 1, g: 0, b: 0, a: 1}
+  lowHealthColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  barWidth: 80
+  barHeight: 8
+  yOffset: 2.5
+--- !u!65 &-2427059151256428529
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 794124813005606766}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3.214611, y: 1.4955035, z: 6.371873}
+  m_Center: {x: -0.00000059604645, y: 1.034178, z: -0.14179385}
 --- !u!1 &805463265098555887
 GameObject:
   m_ObjectHideFlags: 0

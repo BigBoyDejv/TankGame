@@ -28,15 +28,16 @@ public class TurretControl : MonoBehaviour
     public AudioSource audioSource;
     public AudioClip shootSound;
 
-    // Zdieľané statické hodnoty pre crosshair a kameru
-    public static Vector3 AimPoint;          // kde guľka dopadne (z firePoint)
-    public static Vector3 DesiredAimPoint;   // kde hráč chce mieriť (z myši)
-    public static float TurretYaw;           // aktuálna horizontálna rotácia veže
+    public static Vector3 AimPoint;
+    public static Vector3 DesiredAimPoint;
+    public static float TurretYaw;
 
     private float nextFireTime = 0f;
     private float currentGunAngle = 0f;
-    private float targetGunAngle = 0f;
     private float targetTurretYaw = 0f;
+
+    private ReloadBar reloadBar;
+    private TankCrosshair tankCrosshair;
 
     void Start()
     {
@@ -52,6 +53,9 @@ public class TurretControl : MonoBehaviour
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Confined;
+
+        reloadBar = FindObjectOfType<ReloadBar>();
+        tankCrosshair = FindObjectOfType<TankCrosshair>();
     }
 
     void Update()
@@ -78,11 +82,8 @@ public class TurretControl : MonoBehaviour
     void UpdateDesiredAimPoint()
     {
         if (mainCamera == null) return;
-
-        // Raycast z myši na zem — kde hráč chce mieriť
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
-
         if (Physics.Raycast(ray, out hit, 1000f))
             DesiredAimPoint = hit.point;
         else
@@ -92,16 +93,11 @@ public class TurretControl : MonoBehaviour
     void RotateTurretTowardsMouse()
     {
         if (turret == null) return;
-
         Vector3 dir = DesiredAimPoint - turret.position;
         dir.y = 0f;
-
         if (dir.magnitude < 0.1f) return;
-
         float desiredYaw = Quaternion.LookRotation(dir).eulerAngles.y;
         targetTurretYaw = desiredYaw;
-
-        // Plynulé otáčanie veže
         float currentYaw = turret.eulerAngles.y;
         float newYaw = Mathf.MoveTowardsAngle(currentYaw, targetTurretYaw, turretRotationSpeed * Time.deltaTime);
         turret.rotation = Quaternion.Euler(0f, newYaw, 0f);
@@ -111,27 +107,18 @@ public class TurretControl : MonoBehaviour
     void ElevateGunTowardsMouse()
     {
         if (gun == null || turret == null) return;
-
-        // Použi pozíciu veže (nie firePoint) pre výpočet uhla
         Vector3 toTarget = DesiredAimPoint - gun.position;
         float horizontalDist = new Vector3(toTarget.x, 0f, toTarget.z).magnitude;
         float verticalDiff = toTarget.y;
-
-        // Uhol k cieľu
         float desiredAngle = Mathf.Atan2(verticalDiff, horizontalDist) * Mathf.Rad2Deg;
         desiredAngle = Mathf.Clamp(desiredAngle, minGunAngle, maxGunAngle);
-
-        targetGunAngle = desiredAngle;
-        currentGunAngle = Mathf.MoveTowards(currentGunAngle, targetGunAngle, gunElevationSpeed * Time.deltaTime);
-        // Záporné = hlaveň hore (Unity local rotation je invertovaná na X osi)
+        currentGunAngle = Mathf.MoveTowards(currentGunAngle, desiredAngle, gunElevationSpeed * Time.deltaTime);
         gun.localRotation = Quaternion.Euler(-currentGunAngle, 0f, 0f);
     }
 
     void UpdateActualAimPoint()
     {
         if (firePoint == null || gun == null) return;
-
-        // Smer = vždy gun.forward (world forward hlavne), nie firePoint.forward
         Vector3 aimDir = gun.forward;
         RaycastHit hit;
         if (Physics.Raycast(firePoint.position, aimDir, out hit, 1000f))
@@ -145,27 +132,47 @@ public class TurretControl : MonoBehaviour
         if (shellPrefab == null || firePoint == null) return;
 
         SniperMode sniper = mainCamera != null ? mainCamera.GetComponent<SniperMode>() : null;
-        // V sniper mode použi AimDirection = world forward hlavne (nie kamery!)
-        // gun.forward = správny world smer hlavne bez ohľadu na orientáciu firePoint prefabu
-        Vector3 shootDir = (sniper != null && sniper.IsSniping)
+        Vector3 baseDir = (sniper != null && sniper.IsSniping)
             ? sniper.AimDirection
             : gun.forward;
 
-        GameObject shell = Instantiate(shellPrefab, firePoint.position, Quaternion.LookRotation(shootDir));
-        Rigidbody rb = shell.GetComponent<Rigidbody>();
-        if (rb != null) rb.linearVelocity = shootDir * shellSpeed;
+        AmmoManager ammo = AmmoManager.Instance;
+        if (ammo != null)
+        {
+            ammo.UseAmmo();
+            var shots = ammo.GetShots(firePoint.position, baseDir);
+            foreach (var shot in shots)
+                SpawnShell(shot.pos, shot.dir, shot.type);
+        }
+        else
+        {
+            SpawnShell(firePoint.position, baseDir, AmmoType.Standard);
+        }
 
-        TankShell ts = shell.GetComponent<TankShell>();
-        if (ts != null) ts.damage = shellDamage;
-
-        ReloadBar rb2 = FindObjectOfType<ReloadBar>();
-        if (rb2 != null) rb2.OnFired();
-
-        TankCrosshair crosshair = FindObjectOfType<TankCrosshair>();
-        if (crosshair != null) crosshair.OnShot();
-
+        if (reloadBar != null) reloadBar.OnFired();
+        if (tankCrosshair != null) tankCrosshair.OnShot();
         if (muzzleFlash != null) muzzleFlash.Play();
         if (audioSource != null && shootSound != null) audioSource.PlayOneShot(shootSound);
+        
+        // Zatrepac kamerou pri vystrele (iba pre hraca)
+        if (CameraShake.Instance != null)
+            CameraShake.Instance.Shake(0.1f, 0.15f);
+    }
+
+    void SpawnShell(Vector3 pos, Vector3 dir, AmmoType ammoType)
+    {
+        Quaternion shellRot = Quaternion.LookRotation(dir) * Quaternion.Euler(90f, 0f, 0f);
+        GameObject shell = Instantiate(shellPrefab, pos, shellRot);
+
+        Rigidbody rb = shell.GetComponent<Rigidbody>();
+        if (rb != null) rb.linearVelocity = dir * shellSpeed;
+
+        TankShell ts = shell.GetComponent<TankShell>();
+        if (ts != null)
+        {
+            ts.damage = shellDamage;
+            ts.ammoType = ammoType;
+        }
 
         Destroy(shell, 5f);
     }

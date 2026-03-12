@@ -155,4 +155,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TankShell
   damage: 40
   explosionEffect: {fileID: 0}
-  bulletFXPrefab: {fileID: 0}
+  ammoType: 0
+  bulletFXPrefab: {fileID: 1007127540951276732, guid: 3ace37360f306cb4aac03640550fa9ef, type: 3}

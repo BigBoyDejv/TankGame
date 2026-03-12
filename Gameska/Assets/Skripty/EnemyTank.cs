@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemyTank : MonoBehaviour
 {
@@ -25,6 +26,8 @@ public class EnemyTank : MonoBehaviour
     private float nextFireTime = 0f;
     private Vector3 patrolTarget;
 
+    private NavMeshAgent agent;
+
     private enum State { Patrol, Chase, Attack }
     private State currentState = State.Patrol;
 
@@ -50,7 +53,6 @@ public class EnemyTank : MonoBehaviour
         }
         else if (firePoint == null && turret != null)
         {
-            // Fallback ak nie je gun
             GameObject fp = new GameObject("EnemyFirePoint");
             fp.transform.SetParent(turret);
             fp.transform.localPosition = new Vector3(0f, 0f, 2f);
@@ -58,12 +60,28 @@ public class EnemyTank : MonoBehaviour
             firePoint = fp.transform;
         }
 
+        // NavMeshAgent setup
+        agent = GetComponent<NavMeshAgent>();
+        if (agent == null)
+            agent = gameObject.AddComponent<NavMeshAgent>();
+
+        agent.speed = moveSpeed;
+        agent.angularSpeed = turnSpeed * 2f;
+        agent.acceleration = 8f;
+        agent.stoppingDistance = attackRange * 0.8f;
+        agent.radius = 1.5f;
+        agent.height = 0.5f;        // nízko pri zemi
+        agent.baseOffset = 0f;      // bez Y offsetu
+        agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
+
         SetNewPatrolTarget();
     }
 
     void Update()
     {
         if (player == null) return;
+
+
 
         float distToPlayer = Vector3.Distance(transform.position, player.position);
 
@@ -77,7 +95,7 @@ public class EnemyTank : MonoBehaviour
         switch (currentState)
         {
             case State.Patrol: Patrol(); break;
-            case State.Chase: Chase(); break;
+            case State.Chase:  Chase();  break;
             case State.Attack: Attack(); break;
         }
 
@@ -85,21 +103,42 @@ public class EnemyTank : MonoBehaviour
             AimTurretAtPlayer();
     }
 
+    bool AgentReady()
+    {
+        return agent != null && agent.isOnNavMesh && agent.enabled;
+    }
+
     void Patrol()
     {
-        MoveTowards(patrolTarget);
-        if (Vector3.Distance(transform.position, patrolTarget) < 2f)
+        if (!AgentReady()) return;
+        agent.isStopped = false;
+
+        if (!agent.pathPending && agent.remainingDistance < 1.5f)
             SetNewPatrolTarget();
     }
 
     void Chase()
     {
-        MoveTowards(player.position);
+        if (!AgentReady()) return;
+        agent.isStopped = false;
+        agent.SetDestination(player.position);
     }
 
     void Attack()
     {
-        RotateBodyTowards(player.position);
+        if (!AgentReady()) return;
+        agent.isStopped = true;
+
+        // Otáč telo k hráčovi
+        Vector3 dir = (player.position - transform.position).normalized;
+        dir.y = 0f;
+        if (dir != Vector3.zero)
+        {
+            Quaternion targetRot = Quaternion.LookRotation(dir);
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation, targetRot, turnSpeed * Time.deltaTime
+            );
+        }
 
         if (Time.time >= nextFireTime)
         {
@@ -108,59 +147,64 @@ public class EnemyTank : MonoBehaviour
         }
     }
 
-    void MoveTowards(Vector3 target)
-    {
-        RotateBodyTowards(target);
-        transform.position += transform.forward * moveSpeed * Time.deltaTime;
-    }
-
-    void RotateBodyTowards(Vector3 target)
-    {
-        Vector3 dir = (target - transform.position).normalized;
-        dir.y = 0f;
-        if (dir == Vector3.zero) return;
-        Quaternion targetRot = Quaternion.LookRotation(dir);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, turnSpeed * Time.deltaTime);
-    }
-
     void AimTurretAtPlayer()
     {
         Vector3 dir = (player.position - turret.position).normalized;
         dir.y = 0f;
         if (dir == Vector3.zero) return;
         Quaternion targetRot = Quaternion.LookRotation(dir);
-        turret.rotation = Quaternion.RotateTowards(turret.rotation, targetRot, turnSpeed * 2f * Time.deltaTime);
+        turret.rotation = Quaternion.RotateTowards(
+            turret.rotation, targetRot, turnSpeed * 2f * Time.deltaTime
+        );
     }
 
     void Shoot()
     {
         if (shellPrefab == null || firePoint == null) return;
 
-        // Mier priamo na hráča
         Vector3 dir = player != null
             ? (player.position - firePoint.position).normalized
             : firePoint.forward;
 
         Quaternion shellRot = Quaternion.LookRotation(dir) * Quaternion.Euler(90f, 0f, 0f);
         GameObject shell = Instantiate(shellPrefab, firePoint.position, shellRot);
+
         Rigidbody rb = shell.GetComponent<Rigidbody>();
-        if (rb != null)
-            rb.linearVelocity = dir * shellSpeed;
+        if (rb != null) rb.linearVelocity = dir * shellSpeed;
 
         TankShell tankShell = shell.GetComponent<TankShell>();
-        if (tankShell != null)
-            tankShell.damage = shellDamage;
+        if (tankShell != null) tankShell.damage = shellDamage;
 
         Destroy(shell, 5f);
     }
 
     void SetNewPatrolTarget()
     {
-        patrolTarget = transform.position + new Vector3(
-            Random.Range(-patrolRadius, patrolRadius),
-            0f,
-            Random.Range(-patrolRadius, patrolRadius)
-        );
+        if (!AgentReady()) return;
+
+        // Nájdi náhodný bod na NavMesh
+        Vector3 randomDir = Random.insideUnitSphere * patrolRadius;
+        randomDir += transform.position;
+        randomDir.y = transform.position.y;
+
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(randomDir, out hit, patrolRadius, NavMesh.AllAreas))
+        {
+            patrolTarget = hit.position;
+            agent.SetDestination(patrolTarget);
+        }
+    }
+
+    private bool isBlinded = false;
+
+    public void SetBlinded(bool blind)
+    {
+        isBlinded = blind;
+        if (blind)
+        {
+            currentState = State.Patrol;
+            if (AgentReady()) agent.isStopped = false;
+        }
     }
 
     void OnDrawGizmosSelected()

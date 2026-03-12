@@ -1,84 +1,130 @@
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
-// Tento skript NEIDEME dávať na Bullet FX prefab!
-// Dáme ho na prázdny "ShellWrapper" GameObject ktorý:
-// 1. Pohybuje sa cez vlastný Rigidbody
-// 2. Nesie Bullet FX prefab ako čisto vizuálny child (bez jeho Rigidbody)
-// 3. Detekuje kolíziu a robí damage
+public enum AmmoType { Standard, Scatter, Ricochet, Napalm }
 
-[RequireComponent(typeof(Rigidbody))]
 public class TankShell : MonoBehaviour
 {
-    public float damage = 40f;
+    [Header("Základné")]
+    public float damage        = 40f;
+    public AmmoType ammoType   = AmmoType.Standard;
     public GameObject explosionEffect;
 
-    [Header("Bullet FX Pack prefab")]
-    public GameObject bulletFXPrefab; // Bullet_Fire1 / Fire2 / Fire3 prefab
+    [Header("Scatter")]
+    public int   scatterCount  = 5;
+    public float scatterSpread = 15f;
+    public float scatterSpeed  = 50f;
 
-    private bool hasHit = false;
-    private GameObject spawnedFX;
+    [Header("Ricochet")]
+    public int   maxBounces    = 1;
+    public float ricoDamageMultiplier = 0.6f;
+
+    [Header("Napalm")]
+    public float napalmRadius  = 6f;
+    public float burnDuration  = 3f;
+    public float burnDPS       = 8f;
+    public GameObject fireEffectPrefab;
+
+    private bool  hasHit      = false;
+    private int   bounceCount = 0;
     private Rigidbody rb;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.useGravity = false;
-        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-
-        // Spawni FX prefab ako child — ale ODOBER mu Rigidbody a Collider
-        if (bulletFXPrefab != null)
-        {
-            spawnedFX = Instantiate(bulletFXPrefab, transform.position, transform.rotation, transform);
-            spawnedFX.transform.localPosition = Vector3.zero;
-            spawnedFX.transform.localRotation = Quaternion.identity;
-
-            // Odober Rigidbody z FX prefabu
-            Rigidbody fxRb = spawnedFX.GetComponent<Rigidbody>();
-            if (fxRb != null) Destroy(fxRb);
-
-            // Odober všetky Collidery z FX prefabu
-            foreach (Collider col in spawnedFX.GetComponentsInChildren<Collider>())
-                Destroy(col);
-
-            // Odober Bullet skript z FX prefabu
-            foreach (MonoBehaviour script in spawnedFX.GetComponentsInChildren<MonoBehaviour>())
-            {
-                if (script.GetType().Name == "Bullet")
-                    Destroy(script);
-            }
-        }
+        if (rb != null) rb.useGravity = false;
     }
 
     void OnCollisionEnter(Collision collision)
     {
         if (hasHit) return;
-        hasHit = true;
 
-        // Oddeľ FX od wrappera
-        if (spawnedFX != null)
+        if (ammoType == AmmoType.Ricochet && bounceCount < maxBounces)
         {
-            spawnedFX.transform.SetParent(null);
-            Destroy(spawnedFX, 2f);
-        }
-
-        // Explózia
-        if (explosionEffect != null)
-            Instantiate(explosionEffect, transform.position, Quaternion.identity);
-
-        // Damage
-        TankHealth health = collision.gameObject.GetComponentInParent<TankHealth>();
-        if (health != null)
-        {
-            health.TakeDamage(damage);
-
-            if (health.isPlayer)
+            TankHealth th = collision.gameObject.GetComponentInParent<TankHealth>();
+            if (th == null)
             {
-                DamageIndicator indicator = FindObjectOfType<DamageIndicator>();
-                if (indicator != null)
-                    indicator.ShowDamage(transform.position);
+                bounceCount++;
+                damage *= ricoDamageMultiplier;
+                Vector3 reflected = Vector3.Reflect(rb.linearVelocity.normalized,
+                                                    collision.contacts[0].normal);
+                rb.linearVelocity = reflected * rb.linearVelocity.magnitude;
+                return;
             }
         }
 
+        hasHit = true;
+        HandleHit(collision.gameObject, collision.contacts[0].point);
+    }
+
+    void HandleHit(GameObject hitObj, Vector3 hitPoint)
+    {
+        if (explosionEffect != null)
+            Instantiate(explosionEffect, hitPoint, Quaternion.identity);
+
+        switch (ammoType)
+        {
+            case AmmoType.Standard:
+            case AmmoType.Ricochet:
+            case AmmoType.Scatter:
+                DamageTarget(hitObj, damage, hitPoint);
+                break;
+            case AmmoType.Napalm:
+                NapalmHit(hitPoint);
+                break;
+        }
+
         Destroy(gameObject);
+    }
+
+    void DamageTarget(GameObject target, float dmg, Vector3 hitPoint)
+    {
+        TankHealth health = target.GetComponentInParent<TankHealth>();
+        if (health != null)
+        {
+            health.TakeDamage(dmg);
+            if (health.isPlayer)
+            {
+                DamageIndicator ind = FindObjectOfType<DamageIndicator>();
+                if (ind != null) ind.ShowDamage(hitPoint);
+            }
+        }
+    }
+
+    void NapalmHit(Vector3 center)
+    {
+        Collider[] cols = Physics.OverlapSphere(center, napalmRadius);
+        HashSet<TankHealth> hit = new HashSet<TankHealth>();
+
+        foreach (Collider c in cols)
+        {
+            TankHealth th = c.GetComponentInParent<TankHealth>();
+            if (th != null && !hit.Contains(th))
+            {
+                hit.Add(th);
+                th.TakeDamage(damage * 0.5f);
+                th.StartCoroutine(BurnCoroutine(th));
+            }
+        }
+    }
+
+    IEnumerator BurnCoroutine(TankHealth target)
+    {
+        GameObject fireVFX = null;
+        if (fireEffectPrefab != null && target != null)
+            fireVFX = Instantiate(fireEffectPrefab, target.transform.position,
+                                  Quaternion.identity, target.transform);
+
+        float elapsed = 0f;
+        while (elapsed < burnDuration && target != null)
+        {
+            yield return new WaitForSeconds(0.5f);
+            elapsed += 0.5f;
+            if (target != null)
+                target.TakeDamage(burnDPS * 0.5f);
+        }
+
+        if (fireVFX != null) Destroy(fireVFX);
     }
 }
