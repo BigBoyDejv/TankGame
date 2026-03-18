@@ -48,40 +48,54 @@ public class ArtilleryTank : MonoBehaviour
     }
 
     void Start()
+{
+    // Nájdeme hráča cez XPSystem (rovnako ako v EnemyTank)
+    if (XPSystem.PlayerTransform != null)
+        player = XPSystem.PlayerTransform;
+    else
     {
+        // Fallback - hľadáme podľa tagu
         GameObject p = GameObject.FindGameObjectWithTag("Player");
         if (p != null) player = p.transform;
-
-        // Auto-nájdi turret a gun ak nie sú nastavené
-        if (turret == null || gun == null)
-        {
-            foreach (Transform child in GetComponentsInChildren<Transform>())
-            {
-                if (child.name.EndsWith("_Turret")) turret = child;
-                if (child.name.EndsWith("_Gun"))    gun    = child;
-            }
-        }
-
-        nextFireTime = Time.time + Random.Range(2f, fireRate);
     }
+
+    // Auto-nájdi turret a gun ak nie sú nastavené
+    if (turret == null || gun == null)
+    {
+        foreach (Transform child in GetComponentsInChildren<Transform>())
+        {
+            if (child.name.EndsWith("_Turret")) turret = child;
+            if (child.name.EndsWith("_Gun"))    gun    = child;
+        }
+    }
+
+    nextFireTime = Time.time + Random.Range(2f, fireRate);
+}
 
     void Update()
+{
+    if (player == null)
     {
-        if (player == null) return;
-
-        float dist = Vector3.Distance(transform.position, player.position);
-        if (dist > maxRange) return;
-
-        AimAtPlayer(dist);
-
-        if (Time.time >= nextFireTime)
-        {
-            nextFireTime = Time.time + fireRate;
-            StartCoroutine(FireSequence());
-        }
-
-        UpdateWarnings();
+        // Skúsime znova nájsť hráča
+        if (XPSystem.PlayerTransform != null)
+            player = XPSystem.PlayerTransform;
+        else
+            return;
     }
+
+    float dist = Vector3.Distance(transform.position, player.position);
+    if (dist > maxRange) return;
+
+    AimAtPlayer(dist);
+
+    if (Time.time >= nextFireTime)
+    {
+        nextFireTime = Time.time + fireRate;
+        StartCoroutine(FireSequence());
+    }
+
+    UpdateWarnings();
+}
 
     // ── Mierenie ─────────────────────────────────────────────────
     void AimAtPlayer(float dist)

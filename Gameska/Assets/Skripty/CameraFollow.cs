@@ -3,76 +3,93 @@ using UnityEngine;
 public class CameraFollow : MonoBehaviour
 {
     [Header("Cieľ")]
-    public Transform target;
+    public Transform tankBody;
 
     [Header("Vzdialenosť")]
     public float distance = 12f;
-    public float smoothSpeed = 6f;
+    public float height   = 4f;
+
+    [Header("Plynulosť")]
+    public float positionSmooth = 6f;    // nižšie = pomalšie/stabilnejšie
+    public float rotationSmooth = 6f;
+    public float yawSmooth      = 4f;
 
     [Header("Vertikálny uhol")]
-    public float minVerticalAngle = 5f;
-    public float maxVerticalAngle = 60f;
-    [HideInInspector] public float verticalAngle = 25f;
+    public float minPitch = 10f;
+    public float maxPitch = 45f;
 
     [Header("Stabilizácia")]
-    public float positionDamping = 8f;
-    public float rotationDamping = 8f;
+    public float heightSmooth   = 4f;    // výška sa mení pomalšie — menej poskokov
+    public float lookAheadSmooth = 3f;   // look target sa hýbe pomalšie
 
-    private float currentYaw = 0f;
-    private Vector3 smoothVelocity = Vector3.zero;
-    private float stabilizedY;
+    [HideInInspector] public float verticalAngle = 20f;
+
+    private float   currentYaw      = 0f;
+    private float   smoothedHeight  = 0f;
+    private Vector3 smoothVelocity  = Vector3.zero;
+    private Vector3 smoothLookTarget;
 
     void Start()
     {
-        if (target == null)
+        if (tankBody == null)
         {
-            GameObject player = GameObject.FindGameObjectWithTag("Player");
-            if (player != null)
-                target = player.transform;
+            GameObject p = GameObject.FindGameObjectWithTag("Player");
+            if (p != null) tankBody = p.transform;
         }
 
-        if (target != null)
+        if (tankBody != null)
         {
-            currentYaw = target.eulerAngles.y;
-            stabilizedY = target.position.y;
+            currentYaw     = tankBody.eulerAngles.y;
+            smoothedHeight = tankBody.position.y;
+            smoothLookTarget = tankBody.position + Vector3.up * 1.5f;
         }
     }
 
     void LateUpdate()
     {
-        if (target == null) return;
+        if (tankBody == null) return;
 
-        // --- Stabilizácia ---
-        // Vyfiltrujeme Y pozíciu cieľa, aby kamera neposkakovala na nerovnostiach
-        stabilizedY = Mathf.Lerp(stabilizedY, target.position.y, smoothSpeed * Time.deltaTime);
-        Vector3 stabilizedPos = new Vector3(target.position.x, stabilizedY, target.position.z);
+        SniperMode sniper = GetComponent<SniperMode>();
+        if (sniper != null && sniper.IsSniping) return;
 
-        // Horizontálna rotácia sleduje vežu
-        Vector3 aimDir = TurretControl.AimPoint - stabilizedPos;
-        aimDir.y = 0f;
+        bool isMoving  = Mathf.Abs(Input.GetAxis("Vertical"))   > 0.1f;
+        bool isTurning = Mathf.Abs(Input.GetAxis("Horizontal")) > 0.1f;
 
-        if (aimDir.magnitude > 0.5f)
+        // Yaw
+        if (isMoving || isTurning)
         {
-            float targetYaw = Quaternion.LookRotation(aimDir).eulerAngles.y;
-            currentYaw = Mathf.LerpAngle(currentYaw, targetYaw, smoothSpeed * Time.deltaTime);
+            float targetYaw = tankBody.eulerAngles.y;
+            currentYaw = Mathf.LerpAngle(currentYaw, targetYaw, yawSmooth * Time.deltaTime);
+        }
+        else
+        {
+            float targetYaw = TurretControl.TurretYaw;
+            currentYaw = Mathf.LerpAngle(currentYaw, targetYaw, (yawSmooth * 0.4f) * Time.deltaTime);
         }
 
-        // Clamp vertikálny uhol
-        verticalAngle = Mathf.Clamp(verticalAngle, minVerticalAngle, maxVerticalAngle);
+        // Vertikálny uhol podľa myši
+        float mouseYNorm = Input.mousePosition.y / Screen.height;
+        float targetPitch = Mathf.Lerp(maxPitch, minPitch, mouseYNorm);
+        verticalAngle = Mathf.Lerp(verticalAngle, targetPitch, 4f * Time.deltaTime);
+        verticalAngle = Mathf.Clamp(verticalAngle, minPitch, maxPitch);
+
+        // KĽÚČ: výška tanku sa smoothuje samostatne — eliminuje poskoky
+        smoothedHeight = Mathf.Lerp(smoothedHeight, tankBody.position.y, heightSmooth * Time.deltaTime);
+        Vector3 smoothedTankPos = new Vector3(tankBody.position.x, smoothedHeight, tankBody.position.z);
 
         // Pozícia kamery
-        Quaternion rotation = Quaternion.Euler(verticalAngle, currentYaw, 0f);
-        Vector3 offset = rotation * new Vector3(0f, 0f, -distance);
-        Vector3 desiredPosition = stabilizedPos + offset;
+        Quaternion rotation  = Quaternion.Euler(verticalAngle, currentYaw, 0f);
+        Vector3   desiredPos = smoothedTankPos + rotation * new Vector3(0f, 0f, -distance) + Vector3.up * height;
 
         transform.position = Vector3.SmoothDamp(
-            transform.position, desiredPosition,
-            ref smoothVelocity, 1f / positionDamping
+            transform.position, desiredPos, ref smoothVelocity, 1f / positionSmooth
         );
 
-        // Pozerá na tank
-        Vector3 lookTarget = stabilizedPos + Vector3.up * 1.5f;
-        Quaternion desiredRotation = Quaternion.LookRotation(lookTarget - transform.position);
-        transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, rotationDamping * Time.deltaTime);
+        // Look target sa tiež smoothuje — žiadne trhnutia
+        Vector3 desiredLook = smoothedTankPos + Vector3.up * 1.5f;
+        smoothLookTarget = Vector3.Lerp(smoothLookTarget, desiredLook, lookAheadSmooth * Time.deltaTime);
+
+        Quaternion desiredRot = Quaternion.LookRotation(smoothLookTarget - transform.position);
+        transform.rotation = Quaternion.Slerp(transform.rotation, desiredRot, rotationSmooth * Time.deltaTime);
     }
 }

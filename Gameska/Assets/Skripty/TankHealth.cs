@@ -8,11 +8,12 @@ public class TankHealth : MonoBehaviour
     public float maxHealth = 100f;
     public float currentHealth;
     public bool isPlayer = false;
-
+    private bool isDead = false;
     [Header("Efekty")]
     public GameObject explosionEffect;
     public GameObject fireEffect;
     public GameObject smokeEffect; // Novy efekt dymu
+    
 
     [Header("UI")]
     public Slider healthSlider;
@@ -54,62 +55,63 @@ public class TankHealth : MonoBehaviour
         if (currentHealth <= 0f)
             Die();
     }
+void Die()
+{
+    if (isDead) return;
+    isDead = true;
+    
+    if (explosionEffect != null)
+        Instantiate(explosionEffect, transform.position, Quaternion.identity);
 
-    void Die()
+    if (isPlayer)
     {
-        if (explosionEffect != null)
-            Instantiate(explosionEffect, transform.position, Quaternion.identity);
-
-        if (isPlayer)
-        {
-            Debug.Log("Game Over!");
-            GameManager gm = FindObjectOfType<GameManager>();
-            if (gm != null) gm.GameOver();
-        }
-        else
-        {
-            // XP za zabití enemy
-            if (XPSystem.Instance != null)
-                XPSystem.Instance.AddKill();
-
-            GameManager gm = FindObjectOfType<GameManager>();
-            if (gm != null) gm.EnemyDestroyed();
-        }
-
-        // VRAK - neznicime hned objekt!
-        // 1. Zmenime farbu na spalenu ciernu
-        Renderer[] renderers = GetComponentsInChildren<Renderer>();
-        foreach (Renderer r in renderers)
-        {
-            // Ponechame farbu efektom ohen/dym, zmenime len normalne materialy
-            if (!r.gameObject.name.Contains("Effect") && !r.gameObject.name.Contains("Particle"))
-            {
-                r.material.color = new Color(0.1f, 0.1f, 0.1f);
-            }
-        }
-
-        // 2. Vypneme pohyb a UI (okrem kolajnic a tanku, aby vrak nezavadzal, ale skriptom povieme cau)
-        MonoBehaviour[] scripts = GetComponents<MonoBehaviour>();
-        foreach (MonoBehaviour s in scripts)
-        {
-            // Nechame len TankHealth (tento, hned ho vypneme)
-            if (s != this) Destroy(s);
-        }
-
-        // Ak mal NavMeshAgenta, vypneme ho
-        UnityEngine.AI.NavMeshAgent agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
-        if (agent != null) Destroy(agent);
-
-        // Ak mal Rigidbody pre vlastny pohyb, znicime ho alebo znizime vahu
-        Rigidbody rb = GetComponent<Rigidbody>();
-        if (rb != null) Destroy(rb);
-
-        // 3. Po 15 sekundach zmizne
-        Destroy(gameObject, 15f);
-        
-        // Nakoniec vypneme aj tento skript, aby sme uz nedostavali poskodenie
-        this.enabled = false;
+        Debug.Log("Game Over!");
+        GameManager gm = FindObjectOfType<GameManager>();
+        if (gm != null) gm.GameOver();
     }
+    else
+    {
+        if (XPSystem.Instance != null)
+            XPSystem.Instance.AddKill();
+
+        GameManager gm = FindObjectOfType<GameManager>();
+        if (gm != null) gm.EnemyDestroyed();
+    }
+
+    // 🔥 TOTO JE TO JEDINÉ ČO TREBA PRIDAŤ
+    // Vypneme všetky collidery
+    Collider[] colliders = GetComponentsInChildren<Collider>();
+    foreach (Collider c in colliders)
+    {
+        c.enabled = false;
+    }
+
+    // VRAK - zmeníme farbu
+    Renderer[] renderers = GetComponentsInChildren<Renderer>();
+    foreach (Renderer r in renderers)
+    {
+        if (!r.gameObject.name.Contains("Effect") && !r.gameObject.name.Contains("Particle"))
+        {
+            r.material.color = new Color(0.1f, 0.1f, 0.1f);
+        }
+    }
+
+    // Vypneme ostatné skripty
+    MonoBehaviour[] scripts = GetComponents<MonoBehaviour>();
+    foreach (MonoBehaviour s in scripts)
+    {
+        if (s != this) Destroy(s);
+    }
+
+    UnityEngine.AI.NavMeshAgent agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+    if (agent != null) Destroy(agent);
+
+    Rigidbody rb = GetComponent<Rigidbody>();
+    if (rb != null) Destroy(rb);
+
+    Destroy(gameObject, 15f);
+    this.enabled = false;
+}
 
     public void ApplyBurn(float totalDamage, float duration)
     {

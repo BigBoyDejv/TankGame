@@ -1,4 +1,0 @@
-repository "Gameska/Gameska@7972542363763@cloud"
-  path "/"
-    br "/main"
-    co "/main"
