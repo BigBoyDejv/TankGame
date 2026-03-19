@@ -39,32 +39,21 @@ public class EnemyTank : MonoBehaviour
     private int stuckCounter = 0;
 
     void Start()
-    {
-        FindPlayer();
+{
+    // Počkáme kým XPSystem vytvorí hráča
+    Invoke(nameof(DelayedInit), 0.2f);
+}
 
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj != null)
-            player = playerObj.transform;
-        else
-            Debug.LogError("Player not found! Make sure player has tag 'Player'");
-
-        // Nájdeme časti tanku
-        FindTankParts();
-
-        // Vytvoríme firePoint ak neexistuje
-        CreateFirePoint();
-
-        // NavMeshAgent setup
-        SetupNavMeshAgent();
-        
-        // Rigidbody pre lepšiu stabilitu
-        SetupRigidbody();
-
-        // Počkáme jeden frame kým sa NavMesh inicializuje
-        Invoke(nameof(CheckNavMesh), 0.1f);
-        
-        lastPosition = transform.position;
-    }
+void DelayedInit()
+{
+    FindPlayer();
+    FindTankParts();
+    CreateFirePoint();
+    SetupNavMeshAgent();
+    SetupRigidbody();
+    Invoke(nameof(CheckNavMesh), 0.1f);
+    lastPosition = transform.position;
+}
 
     void FindTankParts()
     {

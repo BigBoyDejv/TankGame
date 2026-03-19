@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1890976674031966536}
   - component: {fileID: 5671203822125373525}
   - component: {fileID: 6377118492207424250}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Wheel3_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 5396601283102664770}
   - component: {fileID: 1614788021348821935}
   - component: {fileID: 1055396252447764130}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Wheel6_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -195,7 +195,7 @@ GameObject:
   - component: {fileID: 793230733342181011}
   - component: {fileID: -9215227733976859951}
   - component: {fileID: -2427059151256428529}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: 2.Enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -305,6 +305,7 @@ MonoBehaviour:
   shellDamage: 30
   fireRate: 3
   explosionEffect: {fileID: 8157332987337599133, guid: 3ef8c9151fb4beb41b1d71201c760f53, type: 3}
+  showDebugLogs: 1
 --- !u!114 &793230733342181011
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -377,7 +378,7 @@ GameObject:
   - component: {fileID: 4974876745530731837}
   - component: {fileID: 2727907030780066224}
   - component: {fileID: 6517317823394736241}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Wheel1_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -465,7 +466,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4371850260345823215}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Wheels_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -509,7 +510,7 @@ GameObject:
   - component: {fileID: 1484051749768043551}
   - component: {fileID: 3731028266174772078}
   - component: {fileID: 7192245419031551256}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Wheel5_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -599,7 +600,7 @@ GameObject:
   - component: {fileID: 526215784156891104}
   - component: {fileID: 8437724682594616560}
   - component: {fileID: 4524822480395548972}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Roller3_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -689,7 +690,7 @@ GameObject:
   - component: {fileID: 5004275969839063787}
   - component: {fileID: 5287114799249758556}
   - component: {fileID: 1462678953691419162}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Wheel5_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -777,7 +778,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5812475375716671716}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Wheels_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -821,7 +822,7 @@ GameObject:
   - component: {fileID: 2025821862923316484}
   - component: {fileID: 7270139588612453168}
   - component: {fileID: 3100039557189906020}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Track_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -911,7 +912,7 @@ GameObject:
   - component: {fileID: 1509149802228783819}
   - component: {fileID: 2499361212311455755}
   - component: {fileID: 5891507627889818312}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Turret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1002,7 +1003,7 @@ GameObject:
   - component: {fileID: 6098204058668997977}
   - component: {fileID: 3752407681259475654}
   - component: {fileID: 8103568232917550685}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Wheel6_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1092,7 +1093,7 @@ GameObject:
   - component: {fileID: 5454979588159262603}
   - component: {fileID: 6606784843533850411}
   - component: {fileID: 5691095069053979539}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Sprocket_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1182,7 +1183,7 @@ GameObject:
   - component: {fileID: 5935695195936890711}
   - component: {fileID: 8060058505433897740}
   - component: {fileID: 1849136162411672271}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Wheel3_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1272,7 +1273,7 @@ GameObject:
   - component: {fileID: 2829380692211316147}
   - component: {fileID: 8243184547693378924}
   - component: {fileID: 5183139842404987994}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Idler_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1362,7 +1363,7 @@ GameObject:
   - component: {fileID: 8157409624389513729}
   - component: {fileID: 6321173545872441297}
   - component: {fileID: 231477942388142955}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Mantlet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1455,7 +1456,7 @@ GameObject:
   - component: {fileID: 3664328563956562208}
   - component: {fileID: 6342861339271482537}
   - component: {fileID: 6490942184917892189}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Wheel2_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1543,7 +1544,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3259675575277711068}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Muzzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1576,7 +1577,7 @@ GameObject:
   - component: {fileID: 4421464964131563358}
   - component: {fileID: 8439032440118227780}
   - component: {fileID: 372102275606671776}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1665,7 +1666,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8378516033837439988}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Exhaust_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1698,7 +1699,7 @@ GameObject:
   - component: {fileID: 3739164811690529836}
   - component: {fileID: 5125505468360985389}
   - component: {fileID: 3276538884155670134}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Wheel4_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1786,7 +1787,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5683804933597284458}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Exhaust_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1817,7 +1818,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6941225597448439071}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Muzzle_MG3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1850,7 +1851,7 @@ GameObject:
   - component: {fileID: 8873408862255469885}
   - component: {fileID: 1608306799221630947}
   - component: {fileID: 2304532369883257476}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Roller2_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1940,7 +1941,7 @@ GameObject:
   - component: {fileID: 4744458585405315008}
   - component: {fileID: 373258458956526386}
   - component: {fileID: 4879402889615236210}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Wheel4_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2028,7 +2029,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6878611419235977359}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Muzzle_MG2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2061,7 +2062,7 @@ GameObject:
   - component: {fileID: 8399199221674295841}
   - component: {fileID: 83100651595128717}
   - component: {fileID: 4175747885295977158}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Wheel1_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2151,7 +2152,7 @@ GameObject:
   - component: {fileID: 2253675602799113652}
   - component: {fileID: 2586678935350751994}
   - component: {fileID: 6606121285771613467}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Sprocket_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2241,7 +2242,7 @@ GameObject:
   - component: {fileID: 432723677684958224}
   - component: {fileID: 2792080486121868402}
   - component: {fileID: 4299480872253137139}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Wheel2_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2331,7 +2332,7 @@ GameObject:
   - component: {fileID: 2423977668840501988}
   - component: {fileID: 6751677046223288055}
   - component: {fileID: 6216511287020405930}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Idler_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2421,7 +2422,7 @@ GameObject:
   - component: {fileID: 2900134421052527298}
   - component: {fileID: 4261813964632687684}
   - component: {fileID: 6237956557960677986}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Roller2_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2511,7 +2512,7 @@ GameObject:
   - component: {fileID: 8525587963021140348}
   - component: {fileID: 3472382271648140953}
   - component: {fileID: 2349267029377754052}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Track_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2601,7 +2602,7 @@ GameObject:
   - component: {fileID: 7909165428859819085}
   - component: {fileID: 73760582415157983}
   - component: {fileID: 1512854967908289661}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Roller3_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2691,7 +2692,7 @@ GameObject:
   - component: {fileID: 30274514911437233}
   - component: {fileID: 2429844239504274101}
   - component: {fileID: 2300771838474143529}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Roller1_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2781,7 +2782,7 @@ GameObject:
   - component: {fileID: 3809514007412073963}
   - component: {fileID: 1451402662750118166}
   - component: {fileID: 8050941746747249789}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Roller1_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2869,7 +2870,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7933178700967402478}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: KV_2_Muzzle_MG1
   m_TagString: Untagged
   m_Icon: {fileID: 0}

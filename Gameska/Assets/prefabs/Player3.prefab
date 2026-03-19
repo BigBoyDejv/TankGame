@@ -5042,7 +5042,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraFollow
   tankBody: {fileID: 770445133069485577}
-  distance: 8
+  distance: 12
   height: 4
   positionSmooth: 6
   rotationSmooth: 6
@@ -10391,8 +10391,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e1a13f4fe015db4dbc0d4a5c1b9506c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankHealth
-  maxHealth: 300
-  currentHealth: 0
+  maxHealth: 1000
+  currentHealth: 1000
   isPlayer: 1
   explosionEffect: {fileID: 0}
   fireEffect: {fileID: 0}
@@ -10410,8 +10410,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4f7d64234c82324783e2bc15966b31a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankMovement
-  speed: 8
-  turnSpeed: 40
+  speed: 14
+  turnSpeed: 50
   angularDamping: 10
   uprightStrength: 8
   engineAudio: {fileID: 2952261210167959445}
@@ -10483,13 +10483,13 @@ MonoBehaviour:
   firePoint: {fileID: 1844464314134223502}
   mainCamera: {fileID: 5541854876093386329}
   cameraFollow: {fileID: 0}
-  turretRotationSpeed: 30
+  turretRotationSpeed: 50
   minGunAngle: -10
   maxGunAngle: 40
-  gunElevationSpeed: 60
+  gunElevationSpeed: 70
   shellPrefab: {fileID: 8454836871281306458, guid: e7b09bbdb104dca468bef9e00bce1b3e, type: 3}
-  shellSpeed: 100
-  shellDamage: 50
+  shellSpeed: 200
+  shellDamage: 150
   fireRate: 1
   muzzleFlash: {fileID: 3530369690945476527}
   audioSource: {fileID: 7860052131290710354}

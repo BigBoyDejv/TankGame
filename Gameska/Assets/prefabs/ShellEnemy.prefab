@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 8482973400919439003}
   - component: {fileID: -3223227995081703429}
   m_Layer: 8
-  m_Name: Shell
+  m_Name: ShellEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -165,3 +165,4 @@ MonoBehaviour:
   burnDuration: 3
   burnDPS: 8
   fireEffectPrefab: {fileID: 0}
+  isEnemyShell: 1

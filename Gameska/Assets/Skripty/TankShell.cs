@@ -7,56 +7,69 @@ public enum AmmoType { Standard, Scatter, Ricochet, Napalm }
 public class TankShell : MonoBehaviour
 {
     [Header("Základné")]
-    public float damage        = 40f;
-    public AmmoType ammoType   = AmmoType.Standard;
+    public float damage = 40f;
+    public AmmoType ammoType = AmmoType.Standard;
     public GameObject explosionEffect;
 
     [Header("Scatter")]
-    public int   scatterCount  = 5;
+    public int scatterCount = 5;
     public float scatterSpread = 15f;
-    public float scatterSpeed  = 50f;
+    public float scatterSpeed = 50f;
 
     [Header("Ricochet")]
-    public int   maxBounces    = 1;
+    public int maxBounces = 1;
     public float ricoDamageMultiplier = 0.6f;
 
     [Header("Napalm")]
-    public float napalmRadius  = 6f;
-    public float burnDuration  = 3f;
-    public float burnDPS       = 8f;
+    public float napalmRadius = 6f;
+    public float burnDuration = 3f;
+    public float burnDPS = 8f;
     public GameObject fireEffectPrefab;
 
-    private bool  hasHit      = false;
-    private int   bounceCount = 0;
+    [Header("Nastavenia")]
+    public bool isEnemyShell = false; // zaškrtni na ShellEnemy prefabe
+
+    private bool hasHit = false;
+    private int bounceCount = 0;
     private Rigidbody rb;
+    private Vector3 lastPosition;
+    private int layerMask;
 
     void Start()
-    {
-        rb = GetComponent<Rigidbody>();
-        if (rb != null) rb.useGravity = false;
-    }
+{
+    rb = GetComponent<Rigidbody>();
+    if (rb != null) rb.useGravity = false;
+    lastPosition = transform.position;
+    layerMask = ~LayerMask.GetMask("Shell"); // ignoruj len iné shelly
+}
 
-    void OnCollisionEnter(Collision collision)
-    {
-        if (hasHit) return;
+    void Update()
+{
+    if (hasHit) return;
 
-        if (ammoType == AmmoType.Ricochet && bounceCount < maxBounces)
+    Vector3 currentPosition = transform.position;
+    Vector3 direction = currentPosition - lastPosition;
+    float distance = direction.magnitude;
+
+    if (distance > 0.01f)
+    {
+        // Použi layerMask z Start() - nie lokálnu premennú
+        RaycastHit[] hits = Physics.RaycastAll(lastPosition, direction.normalized, distance, layerMask);
+        
+        foreach (RaycastHit hit in hits)
         {
-            TankHealth th = collision.gameObject.GetComponentInParent<TankHealth>();
-            if (th == null)
-            {
-                bounceCount++;
-                damage *= ricoDamageMultiplier;
-                Vector3 reflected = Vector3.Reflect(rb.linearVelocity.normalized,
-                                                    collision.contacts[0].normal);
-                rb.linearVelocity = reflected * rb.linearVelocity.magnitude;
-                return;
-            }
-        }
+            if (hit.collider.gameObject == gameObject) continue;
+            if (hit.collider.transform.IsChildOf(transform)) continue;
 
-        hasHit = true;
-        HandleHit(collision.gameObject, collision.contacts[0].point);
+            Debug.Log($"HIT: {hit.collider.gameObject.name}");
+            hasHit = true;
+            HandleHit(hit.collider.gameObject, hit.point);
+            return;
+        }
     }
+
+    lastPosition = currentPosition;
+}
 
     void HandleHit(GameObject hitObj, Vector3 hitPoint)
     {
@@ -79,18 +92,21 @@ public class TankShell : MonoBehaviour
     }
 
     void DamageTarget(GameObject target, float dmg, Vector3 hitPoint)
+{
+    TankHealth health = target.GetComponent<TankHealth>();
+    if (health == null) health = target.GetComponentInParent<TankHealth>();
+    if (health == null) health = target.GetComponentInChildren<TankHealth>();
+
+    if (health != null)
     {
-        TankHealth health = target.GetComponentInParent<TankHealth>();
-        if (health != null)
+        health.TakeDamage(dmg);
+        if (health.isPlayer)
         {
-            health.TakeDamage(dmg);
-            if (health.isPlayer)
-            {
-                DamageIndicator ind = FindObjectOfType<DamageIndicator>();
-                if (ind != null) ind.ShowDamage(hitPoint);
-            }
+            DamageIndicator ind = FindObjectOfType<DamageIndicator>();
+            if (ind != null) ind.ShowDamage(hitPoint);
         }
     }
+}
 
     void NapalmHit(Vector3 center)
     {
