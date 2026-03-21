@@ -11,7 +11,7 @@ public class EnemyTank : MonoBehaviour
     public float patrolRadius = 20f;
 
     [Header("Strieľanie")]
-    public GameObject shellPrefab;
+    public GameObject shellPrefab; // ← toto je ShellEnemy
     public Transform firePoint;
     public float shellSpeed = 45f;
     public float shellDamage = 30f;

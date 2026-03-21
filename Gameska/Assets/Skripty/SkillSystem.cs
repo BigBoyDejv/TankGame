@@ -56,35 +56,53 @@ public class SkillSystem : MonoBehaviour
     private Texture2D tex;
 
     void Start()
-    {
-        tankMovement  = GetComponent<TankMovement>();
-        tankHealth    = GetComponent<TankHealth>();
-        mainCamera    = Camera.main;
-        if (mainCamera != null)
-            cameraFollow = mainCamera.GetComponent<CameraFollow>();
+{
+    mainCamera = Camera.main;
+    if (mainCamera != null)
+        cameraFollow = mainCamera.GetComponent<CameraFollow>();
 
-        tex = new Texture2D(1, 1);
-        tex.SetPixel(0, 0, Color.white);
-        tex.Apply();
-    }
+    tex = new Texture2D(1, 1);
+    tex.SetPixel(0, 0, Color.white);
+    tex.Apply();
+}
+
 
     void Update()
+{
+    // Aktualizuj referencie ak sa player zmenil
+    if (XPSystem.PlayerTransform != null)
     {
-        smokeCDLeft     = Mathf.Max(0, smokeCDLeft     - Time.deltaTime);
-        mineCDLeft      = Mathf.Max(0, mineCDLeft      - Time.deltaTime);
-        airstrikeCDLeft = Mathf.Max(0, airstrikeCDLeft - Time.deltaTime);
-
-        if (!isSelectingAirstrike)
-        {
-            if (Input.GetKeyDown(smokeKey)     && smokeCDLeft     <= 0f) ActivateSmoke();
-            if (Input.GetKeyDown(mineKey)      && mineCDLeft      <= 0f) PlaceMine();
-            if (Input.GetKeyDown(airstrikeKey) && airstrikeCDLeft <= 0f) StartAirstrikeSelect();
-        }
-        else
-        {
-            HandleAirstrikeSelection();
-        }
+        GameObject player = XPSystem.PlayerTransform.gameObject;
+        if (tankMovement == null) tankMovement = player.GetComponent<TankMovement>();
+        if (tankHealth == null) tankHealth = player.GetComponent<TankHealth>();
     }
+
+    smokeCDLeft     = Mathf.Max(0, smokeCDLeft     - Time.deltaTime);
+    mineCDLeft      = Mathf.Max(0, mineCDLeft      - Time.deltaTime);
+    airstrikeCDLeft = Mathf.Max(0, airstrikeCDLeft - Time.deltaTime);
+
+    if (!isSelectingAirstrike)
+    {
+        if (Input.GetKeyDown(smokeKey)     && smokeCDLeft     <= 0f) ActivateSmoke();
+        if (Input.GetKeyDown(mineKey)      && mineCDLeft      <= 0f) PlaceMine();
+        if (Input.GetKeyDown(airstrikeKey) && airstrikeCDLeft <= 0f) StartAirstrikeSelect();
+    }
+    else
+    {
+        HandleAirstrikeSelection();
+    }
+}
+
+public void InitReferences(GameObject player)
+{
+    tankMovement = player.GetComponent<TankMovement>();
+    tankHealth = player.GetComponent<TankHealth>();
+    mainCamera = Camera.main;
+    if (mainCamera != null)
+        cameraFollow = mainCamera.GetComponent<CameraFollow>();
+    
+    Debug.Log("✅ SkillSystem referencie nastavené");
+}
 
     // ══════════════════════════════════════════
     // SMOKE SCREEN

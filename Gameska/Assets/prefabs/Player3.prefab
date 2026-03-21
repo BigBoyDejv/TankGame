@@ -10282,6 +10282,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1977418479011910, guid: 3b95bec82dae4484eafd516e73cc2623, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7860052131290710354}
+    - targetCorrespondingSourceObject: {fileID: 1977418479011910, guid: 3b95bec82dae4484eafd516e73cc2623, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -2610792834310243640}
     - targetCorrespondingSourceObject: {fileID: 1471907318671902, guid: 3b95bec82dae4484eafd516e73cc2623, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6139706246530048437}
@@ -10391,8 +10394,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e1a13f4fe015db4dbc0d4a5c1b9506c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankHealth
-  maxHealth: 1000
-  currentHealth: 1000
+  maxHealth: 1400
+  currentHealth: 1400
   isPlayer: 1
   explosionEffect: {fileID: 0}
   fireEffect: {fileID: 0}
@@ -10483,13 +10486,14 @@ MonoBehaviour:
   firePoint: {fileID: 1844464314134223502}
   mainCamera: {fileID: 5541854876093386329}
   cameraFollow: {fileID: 0}
+  autoAimActive: 0
   turretRotationSpeed: 50
-  minGunAngle: -10
-  maxGunAngle: 40
+  minGunAngle: -12
+  maxGunAngle: 45
   gunElevationSpeed: 70
   shellPrefab: {fileID: 8454836871281306458, guid: e7b09bbdb104dca468bef9e00bce1b3e, type: 3}
   shellSpeed: 200
-  shellDamage: 150
+  shellDamage: 240
   fireRate: 1
   muzzleFlash: {fileID: 3530369690945476527}
   audioSource: {fileID: 7860052131290710354}
@@ -10756,6 +10760,21 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &-2610792834310243640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 767665767792994175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75d45832bd1d89d4b80e49df7e447247, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AutoAim
+  lockRange: 50
+  lockSpeed: 5
+  lockKey: 324
 --- !u!4 &769609300935850493 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4079281212413636, guid: 3b95bec82dae4484eafd516e73cc2623, type: 3}

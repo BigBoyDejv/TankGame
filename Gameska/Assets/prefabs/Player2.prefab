@@ -10312,6 +10312,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7611877491239967893, guid: 2ebf979aaaeff1a45966f55f233733e7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2927535863287530044}
+    - targetCorrespondingSourceObject: {fileID: 7611877491239967893, guid: 2ebf979aaaeff1a45966f55f233733e7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 171692692430197764}
     - targetCorrespondingSourceObject: {fileID: 8019616741835341167, guid: 2ebf979aaaeff1a45966f55f233733e7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2723939114361055435}
@@ -10351,8 +10354,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e1a13f4fe015db4dbc0d4a5c1b9506c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankHealth
-  maxHealth: 600
-  currentHealth: 600
+  maxHealth: 800
+  currentHealth: 800
   isPlayer: 1
   explosionEffect: {fileID: 0}
   fireEffect: {fileID: 0}
@@ -10443,13 +10446,14 @@ MonoBehaviour:
   firePoint: {fileID: 3765505708609745995}
   mainCamera: {fileID: 886641446567906508}
   cameraFollow: {fileID: 0}
+  autoAimActive: 0
   turretRotationSpeed: 40
   minGunAngle: -10
   maxGunAngle: 40
   gunElevationSpeed: 60
   shellPrefab: {fileID: 8454836871281306458, guid: e7b09bbdb104dca468bef9e00bce1b3e, type: 3}
   shellSpeed: 150
-  shellDamage: 90
+  shellDamage: 180
   fireRate: 1
   muzzleFlash: {fileID: 3406789412111124758}
   audioSource: {fileID: 2927535863287530044}
@@ -10716,6 +10720,21 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &171692692430197764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4271323990028933352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75d45832bd1d89d4b80e49df7e447247, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AutoAim
+  lockRange: 50
+  lockSpeed: 5
+  lockKey: 324
 --- !u!1 &4444910280954083602 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8019616741835341167, guid: 2ebf979aaaeff1a45966f55f233733e7, type: 3}

@@ -301,9 +301,9 @@ MonoBehaviour:
   patrolRadius: 20
   shellPrefab: {fileID: 8454836871281306458, guid: e7b09bbdb104dca468bef9e00bce1b3e, type: 3}
   firePoint: {fileID: 3259675575277711068}
-  shellSpeed: 45
-  shellDamage: 30
-  fireRate: 3
+  shellSpeed: 100
+  shellDamage: 160
+  fireRate: 8
   explosionEffect: {fileID: 8157332987337599133, guid: 3ef8c9151fb4beb41b1d71201c760f53, type: 3}
   showDebugLogs: 1
 --- !u!114 &793230733342181011
@@ -318,11 +318,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e1a13f4fe015db4dbc0d4a5c1b9506c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankHealth
-  maxHealth: 100
-  currentHealth: 100
+  maxHealth: 600
+  currentHealth: 600
   isPlayer: 0
-  explosionEffect: {fileID: 7522982781472501662, guid: 017c9fcd02ca72049806a4014da0bea6, type: 3}
-  fireEffect: {fileID: 1000011797152326, guid: acf39d9f4addf294d93fa56fa373961b, type: 3}
+  explosionEffect: {fileID: 2421314212823496392, guid: 3f5b04ff25f40f64d8be50e19841ad91, type: 3}
+  fireEffect: {fileID: 4000667520668516784, guid: d0ec0a14054713c4cb454dc5f34fabb2, type: 3}
   smokeEffect: {fileID: 0}
   healthSlider: {fileID: 0}
 --- !u!114 &-9215227733976859951

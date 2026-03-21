@@ -5409,6 +5409,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2839031516196646320, guid: 6df639913147c224ea5b9ceda94435ae, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3233855877170940325}
+    - targetCorrespondingSourceObject: {fileID: 2839031516196646320, guid: 6df639913147c224ea5b9ceda94435ae, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4885921279058571033}
     - targetCorrespondingSourceObject: {fileID: 3237313491493761369, guid: 6df639913147c224ea5b9ceda94435ae, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8264142146621124893}
@@ -5854,6 +5857,21 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &4885921279058571033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8009204221049607153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75d45832bd1d89d4b80e49df7e447247, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AutoAim
+  lockRange: 50
+  lockSpeed: 5
+  lockKey: 324
 --- !u!1001 &8067683735682403362
 PrefabInstance:
   m_ObjectHideFlags: 0

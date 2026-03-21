@@ -17,14 +17,24 @@ public class Minimap : MonoBehaviour
     private Transform playerTransform;
 
     void Start()
-    {
-        tex = new Texture2D(1, 1);
-        tex.SetPixel(0, 0, Color.white);
-        tex.Apply();
+{
+    tex = new Texture2D(1, 1);
+    tex.SetPixel(0, 0, Color.white);
+    tex.Apply();
+    // Nezačíname hľadať player tu
+}
 
+void Update()
+{
+    // Aktualizuj playerTransform cez XPSystem
+    if (XPSystem.PlayerTransform != null)
+        playerTransform = XPSystem.PlayerTransform;
+    else if (playerTransform == null)
+    {
         GameObject p = GameObject.FindGameObjectWithTag("Player");
         if (p != null) playerTransform = p.transform;
     }
+}
 
     void OnGUI()
     {

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class DamageIndicator : MonoBehaviour
 {
     [Header("Nastavenia")]
-    public float indicatorDuration = 2f;
+    public float indicatorDuration = 0.5f;
     public float indicatorRadius = 80f;
     public Color indicatorColor = new Color(1f, 0f, 0f, 0.8f);
 
@@ -19,16 +19,12 @@ public class DamageIndicator : MonoBehaviour
         public float timeRemaining;
     }
 
-    void Start()
-    {
-        tex = new Texture2D(1, 1);
-        tex.SetPixel(0, 0, Color.white);
-        tex.Apply();
-
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
-            playerTransform = player.transform;
-    }
+   void Start()
+{
+    tex = new Texture2D(1, 1);
+    tex.SetPixel(0, 0, Color.white);
+    tex.Apply();
+}
 
     public void ShowDamage(Vector3 hitFromPosition)
     {
@@ -45,14 +41,15 @@ public class DamageIndicator : MonoBehaviour
     }
 
     void Update()
+{
+    if (XPSystem.PlayerTransform != null)
+        playerTransform = XPSystem.PlayerTransform;
+    else if (playerTransform == null)
     {
-        for (int i = activeIndicators.Count - 1; i >= 0; i--)
-        {
-            activeIndicators[i].timeRemaining -= Time.deltaTime;
-            if (activeIndicators[i].timeRemaining <= 0f)
-                activeIndicators.RemoveAt(i);
-        }
+        GameObject p = GameObject.FindGameObjectWithTag("Player");
+        if (p != null) playerTransform = p.transform;
     }
+}
 
     void OnGUI()
     {

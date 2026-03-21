@@ -359,9 +359,9 @@ MonoBehaviour:
   patrolRadius: 20
   shellPrefab: {fileID: 8454836871281306458, guid: e7b09bbdb104dca468bef9e00bce1b3e, type: 3}
   firePoint: {fileID: 338114247881067116}
-  shellSpeed: 45
+  shellSpeed: 100
   shellDamage: 20
-  fireRate: 3
+  fireRate: 4
   explosionEffect: {fileID: 0}
   showDebugLogs: 1
 --- !u!114 &-6435769311503083551
@@ -379,9 +379,9 @@ MonoBehaviour:
   maxHealth: 100
   currentHealth: 100
   isPlayer: 0
-  explosionEffect: {fileID: 0}
-  fireEffect: {fileID: 0}
-  smokeEffect: {fileID: 0}
+  explosionEffect: {fileID: 2421314212823496392, guid: 3f5b04ff25f40f64d8be50e19841ad91, type: 3}
+  fireEffect: {fileID: 516063197083249292, guid: cf7816fb132a1fb42b420690ed213066, type: 3}
+  smokeEffect: {fileID: 516063197083249292, guid: cf7816fb132a1fb42b420690ed213066, type: 3}
   healthSlider: {fileID: 0}
 --- !u!114 &-7782313496587031241
 MonoBehaviour:
@@ -395,7 +395,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75e2ee19b701d53438f49ad4e9f5fc31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankHealthBar
-  tankHealth: {fileID: 0}
+  tankHealth: {fileID: -6435769311503083551}
   isPlayer: 0
   playerColor: {r: 0, g: 1, b: 0, a: 1}
   enemyColor: {r: 1, g: 0, b: 0, a: 1}

@@ -8,6 +8,8 @@ public class TurretControl : MonoBehaviour
     public Transform firePoint;
     public Camera mainCamera;
     public CameraFollow cameraFollow;
+    [Header("Auto Aim")]
+public bool autoAimActive = false;
 
     [Header("Veža")]
     public float turretRotationSpeed = 100f;
@@ -59,6 +61,8 @@ public class TurretControl : MonoBehaviour
     }
 
     void Update()
+{
+    if (!autoAimActive)
     {
         SniperMode sniper = mainCamera != null ? mainCamera.GetComponent<SniperMode>() : null;
         bool isSniping = sniper != null && sniper.IsSniping;
@@ -67,17 +71,18 @@ public class TurretControl : MonoBehaviour
         {
             UpdateDesiredAimPoint();
             RotateTurretTowardsMouse();
-            ElevateGunTowardsMouse();
-        }
-
-        UpdateActualAimPoint();
-
-        if (Input.GetButtonDown("Fire1") && Time.time >= nextFireTime)
-        {
-            nextFireTime = Time.time + 1f / fireRate;
-            Shoot();
+            ElevateGunTowardsMouse(); // ← toto je problem, mys stale ovlada hlavne
         }
     }
+
+    UpdateActualAimPoint();
+
+    if (Input.GetButtonDown("Fire1") && Time.time >= nextFireTime)
+    {
+        nextFireTime = Time.time + 1f / fireRate;
+        Shoot();
+    }
+}
 
     void UpdateDesiredAimPoint()
     {
